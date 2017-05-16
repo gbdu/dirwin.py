@@ -1,7 +1,7 @@
 # dirwin.py
 * Display and 
 
-[![N|Solid](/screenshot.png)]("/screenshot.png")
+[![N|Solid](/screenshot.png)]
 
 dirwin.py is a way to navigate and display window layouts while preserving the z buffer.
 
