@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
-# Requires: xprop, xwininfo
+# Requires: xprop, xwininfo, wmctrl
+
 import sys
 import os
 import subprocess
@@ -11,7 +12,7 @@ import operator
 
 # Config section:
 desktop_geo = None
-scale = 32
+scale = 16
 lastchar='A'
 # end of config section
 
@@ -21,16 +22,14 @@ def get_active_window():
     cmd = ["xdotool", "getactivewindow"]
 
     decoded = subprocess.check_output(cmd).decode("utf-8")
-    
     return int(decoded)
 
 def parse_winfo(linfo):
     dinfo = {}
     for i in linfo:
         if not i: continue
-        
         nline = i.replace(" ","")
-        line = nline.replace("xwininfo:","")        
+        line = nline.replace("xwininfo:","")
 
         if line.startswith("Windowid"):
             ep = line.find('\"')
@@ -43,7 +42,6 @@ def parse_winfo(linfo):
                 title = title.replace("\'", "")
                 dinfo.update(title=title)
                 dinfo.update(wid=wid)
-                
         else:
             el = i.strip().lower()
             if el.startswith("corners"):
@@ -54,19 +52,13 @@ def parse_winfo(linfo):
                 el = el.replace("r-l", "rl")
                 el = el.replace("-geometry", "mgeometry:")
                 el = el.lower()
-                
                 keys = ["absoluteupperleftx", "absoluteupperlefty", \
-                		"relativeupperleftx", "relativeupperlefty", \
-                		"width", "height"]
-
-                
+                	"relativeupperleftx", "relativeupperlefty", \
+                	"width", "height"]
                 for k in keys :
-                	if el.startswith(k):
-                		val= el[len(k)+1:]
-                		dinfo.update({k:int(val)})
-
-                
-                   
+                    if el.startswith(k):
+                        val= el[len(k)+1:]
+                        dinfo.update({k:int(val)})
     return dinfo
 
 def get_client_stack():
@@ -267,6 +259,7 @@ else:
     print("unknown argument")
     exit(1)
 
+print_buff(buffer)
 if target_window_id:
     cmd = ["wmctrl", "-i", "-a", target_window_id]
     decoded = subprocess.check_output(cmd).decode("utf-8")
