@@ -22,5 +22,5 @@ The following binaries must be in your path:
 You can set scale to a lower value for speed (1 for a real-sized screen buffer), but this will start negatively improving accuracy at around 32.
 
 # TODO:
-[] Improve accuracy
+* Improve accuracy
 * Better filtering for panels
