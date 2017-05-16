@@ -1,9 +1,8 @@
 # dirwin.py
-* Display and 
+dirwin.py is a way to navigate and display window layouts while preserving the z buffer.
 
 ![N|Solid](/screenshot.png)
 
-dirwin.py is a way to navigate and display window layouts while preserving the z buffer.
 
 # Basic usuage:
 - ./dirwin.py list # Show current window layout as ascii
