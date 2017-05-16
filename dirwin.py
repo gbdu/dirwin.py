@@ -265,3 +265,13 @@ if target_window_id:
     decoded = subprocess.check_output(cmd).decode("utf-8")
     print(decoded)
 
+    for i in infos:
+        if i['wid'] == target_window_id:
+            break ;
+
+    w = i["width"]
+    h = i["height"]
+    
+    cmd = ["xdotool", "mousemove", "--window", str(target_window_id), str(w/2), str(h/2)]
+    decoded = subprocess.check_output(cmd).decode("utf-8")
+    print(decoded)
