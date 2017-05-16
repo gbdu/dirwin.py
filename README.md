@@ -1,7 +1,7 @@
 # dirwin.py
 * Display and 
 
-[![N|Solid](/screenshot.png)]
+![N|Solid](/screenshot.png)
 
 dirwin.py is a way to navigate and display window layouts while preserving the z buffer.
 
@@ -22,5 +22,5 @@ The following binaries must be in your path:
 You can set scale to a lower value for speed (1 for a real-sized screen buffer), but this will start negatively improving accuracy at around 32.
 
 # TODO:
-[ ] Improve accuracy
-[ ] Better filtering for panels
+[] Improve accuracy
+* Better filtering for panels
