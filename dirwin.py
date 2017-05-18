@@ -61,30 +61,37 @@ def parse_winfo(linfo):
                         dinfo.update({k:int(val)})
     return dinfo
 
-def get_client_stack():
-    cmd = ["xprop -root"]
 
-    proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
-
-    while True:
-        line = proc.stdout.readline()
-        if line != '':
-            lo = line.decode("utf-8")
-            global desktop_geo
-            if desktop_geo == None and lo.startswith("_NET_DESKTOP_GEOMETRY(CARDINAL)"):
-                g = lo[lo.find("=")+2:]
-                g = g.replace(" ", "")
-                g = g.split(",")
-
-                desktop_geo = (int(g[0]), int(g[1])) 
-            elif lo.startswith("_NET_CLIENT_LIST_STACKING"):
-                lo = lo[lo.find("#") + 1:]
-                windows = [x.strip() for x in lo.split(",")]
-                if desktop_geo : return windows
+def get_desktop_info(xprop_output):
+    x = xprop_output.find("_NET_DESKTOP_GEOMETRY(CARDINAL)")
+    if x != -1 :
+        xo = xprop_output[x:]
+        xx = xo.find("\n")
+        if xx != -1:
+            ds=xprop_output[x+33:x+xx]
+            ds = ds.replace(" ","")
+            ds = ds.split(",")
+            desktop_geo = (int(ds[0]), int(ds[1]))
+            
+            return desktop_geo
         else:
-            break
+            print("could not find desktop dimensions")
+            exit(1)
 
-
+def get_client_stack(xprop_output):
+    
+    x = xprop_output.find("_NET_CLIENT_LIST_STACKING(WINDOW)")
+    
+    if x != -1:
+        xo = xprop_output[x:]
+        xx = xo.find("\n")
+        if xx != -1:
+            s = xprop_output[x+46:x+xx]
+            return [x.strip() for x in s.split(",")]
+        else:
+            print("could not find windows")
+            exit(1)
+    
 def get_window_info(win):
     cmd = ["xwininfo", "-id", "%s" % win]
 
@@ -138,8 +145,13 @@ def get_char_for(wid):
 
     
     return curr 
-    
-stack = get_client_stack()
+
+xcmd = ["xprop", "-root"]
+xprop_output = subprocess.check_output(xcmd).decode("utf-8")
+
+desktop_geo = get_desktop_info(xprop_output)
+stack = get_client_stack(xprop_output)
+
 infos = []
 
 for i in stack:
