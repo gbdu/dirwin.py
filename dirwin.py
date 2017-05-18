@@ -1,6 +1,12 @@
 #!/usr/bin/python3
+#
+# Requires: xprop, xdotool, xwininfo, wmctrl
+#
+#       xprop: window stack order and desktop geometry
+#       xdotool: identify selected window and move mouse
+#       xwininfo: window geometry information
+#       wmctrl: change focus
 
-# Requires: xprop, xwininfo, wmctrl
 
 import sys
 import os
@@ -11,11 +17,16 @@ from collections import Counter
 import operator
 
 # Config section:
-desktop_geo = None
-scale = 16
-lastchar='A'
-# end of config section
 
+scale = 16
+lastchar='A' # You can use something like awesome font icons here (as
+             # unicode chars that the term understands) end of config
+             # section
+
+# Globbals:
+
+selected_char = ""
+desktop_geo = None
 known_symbols = {}
 
 def get_active_window():
@@ -30,7 +41,6 @@ def parse_winfo(linfo):
         if not i: continue
         nline = i.replace(" ","")
         line = nline.replace("xwininfo:","")
-
         if line.startswith("Windowid"):
             ep = line.find('\"')
             if ep == -1:
@@ -79,7 +89,6 @@ def get_desktop_info(xprop_output):
             exit(1)
 
 def get_client_stack(xprop_output):
-    
     x = xprop_output.find("_NET_CLIENT_LIST_STACKING(WINDOW)")
     
     if x != -1:
@@ -132,7 +141,7 @@ def populate_buffer(b,winfos):
         		except IndexError:
         			print("out of range (%d,%d)" % (col-1, row-1))
         			exit(1)
-selected_char = ""
+
 
 def get_char_for(wid):
     global lastchar
@@ -145,39 +154,6 @@ def get_char_for(wid):
 
     
     return curr 
-
-xcmd = ["xprop", "-root"]
-xprop_output = subprocess.check_output(xcmd).decode("utf-8")
-
-desktop_geo = get_desktop_info(xprop_output)
-stack = get_client_stack(xprop_output)
-
-infos = []
-
-for i in stack:
-    winfo = get_window_info(i)
-    if(winfo["title"]=="xfce4-panel"):
-        continue
-    
-    infos.append(winfo)
-
-#infos = infos[::-1]
-
-for i in infos:
-    i['char'] = get_char_for(i["wid"])
-    w = int(i['wid'], 16);
-    
-    if w == get_active_window():
-        i['is_selected'] = 1
-        selected_char = i['char']
-    else:
-        i['is_selected'] = 0
-
-#print(infos)
-#print(desktop_geo)
-
-buffer = create_test_buffer()
-populate_buffer(buffer, infos)
 
 def calc_affinity(l):
     d = Counter(l)
@@ -253,6 +229,40 @@ if len(sys.argv) == 1:
 def transposed(lists):
    if not lists: return []
    return list(map(lambda *row: list(row), *lists))
+
+
+xcmd = ["xprop", "-root"]
+xprop_output = subprocess.check_output(xcmd).decode("utf-8")
+
+desktop_geo = get_desktop_info(xprop_output)
+stack = get_client_stack(xprop_output)
+
+infos = []
+
+for i in stack:
+    winfo = get_window_info(i)
+    if(winfo["title"]=="xfce4-panel"):
+        continue
+    
+    infos.append(winfo)
+
+#infos = infos[::-1]
+
+for i in infos:
+    i['char'] = get_char_for(i["wid"])
+    w = int(i['wid'], 16);
+    
+    if w == get_active_window():
+        i['is_selected'] = 1
+        selected_char = i['char']
+    else:
+        i['is_selected'] = 0
+
+#print(infos)
+#print(desktop_geo)
+
+buffer = create_test_buffer()
+populate_buffer(buffer, infos)
 
 if sys.argv[1]=="up":
     target_window_id = calc_affinity(window_char_up(selected_char))
