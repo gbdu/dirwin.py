@@ -1,7 +1,12 @@
 # dirwin.py
-dirwin.py is a way to navigate and display window layouts while preserving the z buffer.
+dirwin.py is a way to navigate windows quickly with the keyboard by relative direction, while preserving the z buffer.
+
 
 ![N|Solid](/screenshot.png)
+
+
+https://user-images.githubusercontent.com/13475516/133817234-d7ac8ed0-81c4-4d4e-b975-670c21aa315b.mp4
+
 
 
 # Basic usuage:
